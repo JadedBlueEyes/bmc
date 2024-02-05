@@ -3,6 +3,8 @@ use num_traits::FromPrimitive;
 
 pub mod machine_code;
 pub mod memory;
+pub mod lexer;
+pub mod highlight;
 // mod interpreter;
 
 macro_rules! decode_and_execute {
