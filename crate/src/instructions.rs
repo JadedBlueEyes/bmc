@@ -14,7 +14,6 @@
 use std::fmt::Debug;
 use std::num::NonZeroU16;
 
-use crate::machine_code::Test;
 use crate::Ctx;
 
 type Register = u8;
@@ -49,7 +48,7 @@ impl $instructions_name {
     pub fn decode(instr: u16) -> Result<Self, DecodeError> {
         match instr {
             $(
-            i if $bitpattern == (instr & $bitmask) => Ok($instructions_name::$variant ($( ( i >> $shift) as u8 & $mask , )*)),
+            _i if $bitpattern == (instr & $bitmask) => Ok($instructions_name::$variant ($( ( instr >> $shift) as u8 & $mask , )*)),
             )*
             0x0000 => Err(DecodeError::NullInstruction),
             _ => Err(DecodeError::InvalidInstruction (instr.try_into().unwrap())),

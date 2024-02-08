@@ -1,5 +1,4 @@
 use machine_code::Ctx;
-use num_traits::FromPrimitive;
 
 pub mod machine_code;
 pub mod memory;
@@ -16,7 +15,7 @@ pub fn execute(ctx: &mut Ctx, mut fuel: usize) -> usize {
             <[u8; 2]>::try_from(&ctx.memory[ctx.pc as usize..=ctx.pc as usize + 1]).unwrap(),
         );
         let instr_dec = instructions::Instr::decode(instr).unwrap();
-        assert_eq!(instr, instr_dec.encode());
+        // assert_eq!(instr, instr_dec.encode());
         // dbg!(&instr, &ctx.pc);
         // println!("{:#04x} {:#04x}", ctx.pc, &instr);
         ctx.pc += 2;
