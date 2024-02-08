@@ -1,4 +1,5 @@
 use num_derive::FromPrimitive;
+use num_traits::FromPrimitive;
 
 pub type MachineMemory = [u8; 256];
 type MachineRegisters = [u8; 16];
@@ -195,8 +196,8 @@ pub enum Test {
 pub const JUMP_WITH_TEST: Instruction = (0xB000, 0xFF00);
 /// Jump to register address with test. The contents of register r are compared to the contents of register 0 using a test which depends on x. If the result of the test is true, a jump is made to the memory address stored in register t.
 /// The register values are treated as unsigned integers for the comparisons.
-pub fn jump_with_test(ctx: &mut Ctx, r_register: Register, x_test: Test, t_register: Register) {
-    if match x_test {
+pub fn jump_with_test(ctx: &mut Ctx, r_register: Register, x_test: u8, t_register: Register) {
+    if match FromPrimitive::from_u8(x_test).unwrap_or_default() {
         Test::Eq => ctx.registers[r_register as usize] == ctx.registers[0],
         Test::Neq => ctx.registers[r_register as usize] != ctx.registers[0],
         Test::Gte => ctx.registers[r_register as usize] >= ctx.registers[0],

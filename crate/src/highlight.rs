@@ -25,7 +25,7 @@ pub fn highlight(source: &str, mut w: &mut dyn std::io::Write) {
                 // let source_file = file.map(|f| f.as_str()).unwrap_or("input");
                 Report::build(ReportKind::Error, (), span.start)
                     .with_message("Unknown token!")
-                    .with_label(Label::new(span).with_message("Here!"))
+                    .with_label(Label::new(span))
                     .finish()
                     .print(Source::from(&source))
                     .unwrap();
