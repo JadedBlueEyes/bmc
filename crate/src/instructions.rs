@@ -1,5 +1,5 @@
 
-// macro_rules! instrucitons {
+// macro_rules! instructions {
 //     ($instr: tt, $ctx: ident, $(($t: ident, $f: ident, $i: ident, $($y: expr),*)),*) => (
 //         match $instr {
 //         $(
@@ -34,7 +34,7 @@ impl Debug for DecodeError {
     }
 }
 
-macro_rules! instrucitons {
+macro_rules! instructions {
     ($instructions_name:ident, $(($variant:ident ($($param:ident $type:ident: $shift:literal & $mask:literal),*), $code:ident, $bitpattern:literal, $bitmask:literal)),* $(,)*) => {
 
 #[derive(Debug, Clone, Copy)]
@@ -75,7 +75,7 @@ impl $instructions_name {
     }
 }
 
-instrucitons!(
+instructions!(
     Instr,
     (NoOp (), no_op, 0x0FFF, 0xFFFF), 
     (LoadMemory (r Register: 8 & 0xf, xy DirectAddress: 0 & 0xff), load_memory, 0x1000, 0xF000), 
