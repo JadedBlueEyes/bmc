@@ -19,50 +19,42 @@ pub struct Ctx {
     pub registers: MachineRegisters,
 }
 
-pub const NO_OP: Instruction = (0x0FFF, 0xFFFF);
 
 /// No operation. Carry on to the next instruction. The data fields must all be F.
 pub fn no_op(_ctx: &mut Ctx) {}
 
-pub const LOAD_MEMORY: Instruction = (0x1000, 0xF000);
 /// Load from memory (direct addressing). Copy the data at memory address xy into register r.
 pub fn load_memory(ctx: &mut Ctx, r_register: Register, xy_address: DirectAddress) {
     ctx.registers[r_register as usize] = ctx.memory[xy_address as usize];
 }
 
-pub const LOAD_VALUE: Instruction = (0x2000, 0xF000);
 /// Load value (immediate addressing). Copy xy into register r.
 pub fn load_value(ctx: &mut Ctx, r_register: Register, xy_value: ImmediateValue) {
     ctx.registers[r_register as usize] = xy_value;
 }
 
-pub const LOAD_INDIRECT: Instruction = (0xD000, 0xFF00);
 /// Load from memory (register indirect addressing). Copy the data from the memory location whose address is in register s. Place it in register r.
 /// For example, if register s contains the value 86, and memory location 86 contains the value 7B, register r will be given the value 7B.
 pub fn load_indirect(ctx: &mut Ctx, r_register: Register, s_register: Register) {
     ctx.registers[r_register as usize] = ctx.memory[ctx.registers[s_register as usize] as usize];
 }
 
-pub const STORE_MEMORY: Instruction = (0x3000, 0xF000);
 /// Store (direct addressing). Copy the contents of register r into memory at address xy.
 pub fn store_memory(ctx: &mut Ctx, r_register: Register, xy_address: DirectAddress) {
     ctx.memory[xy_address as usize] = ctx.registers[r_register as usize];
 }
 
-pub const STORE_INDIRECT: Instruction = (0xE000, 0xFF00);
 /// Store in memory (register indirect addressing). Copy the data from register r. Place it in the memory location whose address is in register s.
 /// For example, if register r contains the value EC, and register s contains the value 41, the value EC will be placed in memory at address 41.
 pub fn store_indirect(ctx: &mut Ctx, r_register: Register, s_register: Register) {
     ctx.memory[ctx.registers[s_register as usize] as usize] = ctx.registers[r_register as usize];
 }
 
-pub const MOVE_REGISTER: Instruction = (0x4000, 0xFF00);
 /// Move. Copy the contents of register r into register s.
 pub fn move_register(ctx: &mut Ctx, r_register: Register, s_register: Register) {
     ctx.registers[s_register as usize] = ctx.registers[r_register as usize];
 }
 
-pub const ADD_INTEGER: Instruction = (0x5000, 0xF000);
 /// Add as integers. Add the contents of register s to the contents of register t as twos complement integers. Put the result into register r.
 pub fn add_integer(
     ctx: &mut Ctx,
@@ -75,7 +67,6 @@ pub fn add_integer(
         as u8;
 }
 
-pub const ADD_FLOAT: Instruction = (0x6000, 0xF000);
 /// Add the contents of register s to the contents of register t as floating point values. Put the result into register r. The format is 1 sign bit, 3 exponent bits and 4 mantissa bits, SEEEMMMM, with 1 as negative.
 pub fn add_float(ctx: &mut Ctx, r_register: Register, s_register: Register, t_register: Register) {
     let t = ctx.registers[t_register as usize];
@@ -118,14 +109,12 @@ pub fn add_float(ctx: &mut Ctx, r_register: Register, s_register: Register, t_re
     // let (r_signbit, r_exponent, r_mantissa) = (((r >> 31) & 0x1), ((r >> 23) & 0x7), (r & 0xf));
 }
 
-pub const BITWISE_OR: Instruction = (0x7000, 0xF000);
 /// OR. Carry out the bitwise OR operation on the contents of register s and the contents of register t. Put the result into register r.
 pub fn bitwise_or(ctx: &mut Ctx, r_register: Register, s_register: Register, t_register: Register) {
-    ctx.registers[r_register as usize] = ctx.registers[t_register as usize]
-        | ctx.registers[s_register as usize];
+    ctx.registers[r_register as usize] =
+        ctx.registers[t_register as usize] | ctx.registers[s_register as usize];
 }
 
-pub const BITWISE_AND: Instruction = (0x8000, 0xF000);
 /// AND. Carry out the bitwise AND operation on the contents of register s and the contents of register t. Put the result into register r.
 pub fn bitwise_and(
     ctx: &mut Ctx,
@@ -133,11 +122,10 @@ pub fn bitwise_and(
     s_register: Register,
     t_register: Register,
 ) {
-    ctx.registers[r_register as usize] = ctx.registers[t_register as usize]
-        & ctx.registers[s_register as usize];
+    ctx.registers[r_register as usize] =
+        ctx.registers[t_register as usize] & ctx.registers[s_register as usize];
 }
 
-pub const BITWISE_XOR: Instruction = (0x9000, 0xF000);
 /// XOR. Carry out the bitwise exclusive or operation on the contents of register s and the contents of register t. Put the result into register r.
 pub fn bitwise_xor(
     ctx: &mut Ctx,
@@ -145,29 +133,25 @@ pub fn bitwise_xor(
     s_register: Register,
     t_register: Register,
 ) {
-    ctx.registers[r_register as usize] = ctx.registers[t_register as usize]
-        ^ ctx.registers[s_register as usize];
+    ctx.registers[r_register as usize] =
+        ctx.registers[t_register as usize] ^ ctx.registers[s_register as usize];
 }
 
-pub const BITWISE_ROTATE: Instruction = (0xA000, 0xF0F0);
 /// Rotate the contents of register r by x bits to the right. Update register r with the result.
 pub fn bitwise_rotate(ctx: &mut Ctx, r_register: Register, x_amount: ImmediateValue) {
     ctx.registers[r_register as usize] >>= x_amount;
 }
 
-pub const JUMP: Instruction = (0xB000, 0xFF00);
 /// Jump to memory location xy. That is, the program counter is set to xy just before the next instruction is executed. Note that this is really a special case of the next instruction.
 pub fn jump(ctx: &mut Ctx, xy_loc: DirectAddress) {
     ctx.pc = xy_loc;
 }
 
-pub const JUMP_INDIRECT: Instruction = (0xF000, 0xFFF0);
 /// Jump to register address. Jump to the memory address stored in register t. That is, the contents of register t are copied to the program counter. Note that this is really a special case of the next instruction.
 pub fn jump_indirect(ctx: &mut Ctx, t_register: Register) {
     ctx.pc = ctx.registers[t_register as usize];
 }
 
-pub const JUMP_IF_EQ: Instruction = (0xB000, 0xF000);
 /// Jump if equal. If the contents of register r equal the contents of register 0, jump to memory location xy.
 pub fn jump_if_eq(ctx: &mut Ctx, r_register: Register, xy_loc: DirectAddress) {
     // dbg!(ctx.registers[r_register as usize], ctx.registers[0], ctx.registers[r_register as usize] == ctx.registers[0]);
@@ -178,8 +162,7 @@ pub fn jump_if_eq(ctx: &mut Ctx, r_register: Register, xy_loc: DirectAddress) {
 }
 
 #[repr(u8)]
-#[derive(FromPrimitive)]
-#[derive(Default)]
+#[derive(FromPrimitive, Default)]
 pub enum Test {
     Eq = 0,
     Neq = 1,
@@ -191,9 +174,6 @@ pub enum Test {
     Never,
 }
 
-
-
-pub const JUMP_WITH_TEST: Instruction = (0xB000, 0xFF00);
 /// Jump to register address with test. The contents of register r are compared to the contents of register 0 using a test which depends on x. If the result of the test is true, a jump is made to the memory address stored in register t.
 /// The register values are treated as unsigned integers for the comparisons.
 pub fn jump_with_test(ctx: &mut Ctx, r_register: Register, x_test: u8, t_register: Register) {
@@ -210,7 +190,6 @@ pub fn jump_with_test(ctx: &mut Ctx, r_register: Register, x_test: u8, t_registe
     };
 }
 
-pub const HALT: Instruction = (0xC000, 0xFFFF);
 /// Stop execution.
 pub fn halt(ctx: &mut Ctx) {
     ctx.executing = false

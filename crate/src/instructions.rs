@@ -1,4 +1,3 @@
-
 // macro_rules! instructions {
 //     ($instr: tt, $ctx: ident, $(($t: ident, $f: ident, $i: ident, $($y: expr),*)),*) => (
 //         match $instr {
@@ -29,7 +28,9 @@ impl Debug for DecodeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             DecodeError::NullInstruction => write!(f, "Reached null insutruction"),
-            DecodeError::InvalidInstruction(i) => write!(f, "Failed to decode instruction {:#04x}", i),
+            DecodeError::InvalidInstruction(i) => {
+                write!(f, "Failed to decode instruction {:#04x}", i)
+            }
         }
     }
 }
@@ -54,8 +55,8 @@ impl $instructions_name {
             _ => Err(DecodeError::InvalidInstruction (instr.try_into().unwrap())),
         }
     }
-    
-    
+
+
     pub fn encode(self) -> u16 {
         match self {
             $(
@@ -63,7 +64,7 @@ impl $instructions_name {
             )*
         }
     }
-    
+
     pub fn execute(self, ctx: &mut Ctx) {
         match self {
             $(
@@ -77,10 +78,10 @@ impl $instructions_name {
 
 instructions!(
     Instr,
-    (NoOp (), no_op, 0x0FFF, 0xFFFF), 
-    (LoadMemory (r Register: 8 & 0xf, xy DirectAddress: 0 & 0xff), load_memory, 0x1000, 0xF000), 
-    (LoadValue (r Register: 8 & 0xf, xy ImmediateValue: 0 & 0xff), load_value, 0x2000, 0xF000), 
-    (LoadIndirect (r Register: 4 & 0xf, s Register: 0 & 0xf), load_indirect, 0xD000, 0xFF00), 
+    (NoOp (), no_op, 0x0FFF, 0xFFFF),
+    (LoadMemory (r Register: 8 & 0xf, xy DirectAddress: 0 & 0xff), load_memory, 0x1000, 0xF000),
+    (LoadValue (r Register: 8 & 0xf, xy ImmediateValue: 0 & 0xff), load_value, 0x2000, 0xF000),
+    (LoadIndirect (r Register: 4 & 0xf, s Register: 0 & 0xf), load_indirect, 0xD000, 0xFF00),
     (StoreMemory (r Register: 8 & 0xf, xy DirectAddress: 0 & 0xff), store_memory, 0x3000, 0xF000),
     (StoreIndirect (r Register: 4 & 0xf, s Register: 0 & 0xf), store_indirect, 0xE000, 0xFF00),
     (MoveRegister (r Register: 4 & 0xf, s Register: 0 & 0xf), move_register, 0x4000, 0xFF00),
@@ -96,4 +97,3 @@ instructions!(
     (JumpWithTest (r Register: 8 & 0xf, x u8: 4 & 0xf, t Register: 0 & 0xf), jump_with_test, 0xF000, 0xF000),
     (Halt (), halt, 0xC000, 0xFFFF),
 );
-

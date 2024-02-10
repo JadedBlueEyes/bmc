@@ -1,12 +1,11 @@
 use machine_code::Ctx;
 
-pub mod machine_code;
-pub mod memory;
-pub mod lexer;
 pub mod highlight;
 pub mod instructions;
+pub mod lexer;
+pub mod machine_code;
+pub mod memory;
 // mod interpreter;
-
 
 pub fn execute(ctx: &mut Ctx, mut fuel: usize) -> usize {
     while let Some(remaining) = fuel.checked_sub(1) {

@@ -62,7 +62,7 @@ fn main() {
             println!("Used {} instruction cycles", burned);
             println!("MEMORY: \n{:?}", ctx.memory);
             println!("REGISTERS: \n{:?}", ctx.registers);
-        },
+        }
         Commands::Highlight { file } => {
             let mut reader: Box<dyn BufRead> = match file {
                 Some(file_path) => {
@@ -73,13 +73,12 @@ fn main() {
                 None => Box::new(BufReader::new(io::stdin())),
             };
             let mut source = String::new();
-            
+
             let mut w: Vec<u8> = Vec::new();
             let _ = reader.read_to_string(&mut source);
-            
+
             highlight(&source, &mut w);
             let _ = io::stdout().write(&w);
         }
     };
 }
-
