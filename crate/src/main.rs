@@ -48,15 +48,20 @@ fn main() {
             let memory = read_memory_file(reader);
             println!("{:?}", memory);
             let mut ctx: Ctx = Ctx {
-                executing: true,
                 memory,
                 pc: 0,
                 registers: [0; 16],
             };
             let mut burned = 0;
             const STEP: usize = 256;
-            while ctx.executing {
-                burned += STEP - execute(&mut ctx, STEP);
+            while let (burn, res) = execute(&mut ctx, STEP) {
+                burned += STEP - burn;
+                if let Err(e) = res {
+                    match e {
+                        bmc::machine_code::Err::HaltExecution => return,
+                        _ => return println!("Encountered error {:?}, halting execution", e),
+                    }
+                }
             }
 
             println!("Used {} instruction cycles", burned);

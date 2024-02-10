@@ -1,4 +1,4 @@
-use machine_code::Ctx;
+use machine_code::{Ctx, Res};
 
 pub mod highlight;
 pub mod instructions;
@@ -7,7 +7,7 @@ pub mod machine_code;
 pub mod memory;
 // mod interpreter;
 
-pub fn execute(ctx: &mut Ctx, mut fuel: usize) -> usize {
+pub fn execute(ctx: &mut Ctx, mut fuel: usize) -> (usize, Res) {
     while let Some(remaining) = fuel.checked_sub(1) {
         fuel = remaining;
         let instr = u16::from_be_bytes(
@@ -18,10 +18,10 @@ pub fn execute(ctx: &mut Ctx, mut fuel: usize) -> usize {
         // dbg!(&instr, &ctx.pc);
         // println!("{:#04x} {:#04x}", ctx.pc, &instr);
         ctx.pc += 2;
-        instr_dec.execute(ctx);
-        if !ctx.executing {
-            break;
+        let res = instr_dec.execute(ctx);
+        if res.is_err() {
+            return (fuel, res);
         };
     }
-    fuel
+    (fuel, Res::Ok(()))
 }

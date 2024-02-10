@@ -65,7 +65,7 @@ impl $instructions_name {
         }
     }
 
-    pub fn execute(self, ctx: &mut Ctx) {
+    pub fn execute(self, ctx: &mut Ctx) -> crate::machine_code::Res {
         match self {
             $(
                 $instructions_name::$variant($($param, )*) => crate::machine_code::$code(ctx, $($param, )*),
@@ -97,3 +97,10 @@ instructions!(
     (JumpWithTest (r Register: 8 & 0xf, x u8: 4 & 0xf, t Register: 0 & 0xf), jump_with_test, 0xF000, 0xF000),
     (Halt (), halt, 0xC000, 0xFFFF),
 );
+
+#[cfg(kani)]
+#[kani::proof]
+fn decode_does_not_panic() {
+    let instr: u16 = kani::any();
+    let _ = Instr::decode(instr);
+}
