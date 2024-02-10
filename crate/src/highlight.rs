@@ -6,8 +6,8 @@ use ariadne::{Label, Report, ReportKind, Source};
 use logos::Logos;
 
 pub fn highlight(source: &str, mut w: &mut dyn std::io::Write) {
-    let mut lex = Token::lexer(&source).spanned();
-    while let Some((token, span)) = lex.next() {
+    let lex = Token::lexer(source).spanned();
+    for (token, span) in lex {
         let _ = match token {
             Ok(Token::LineComment) => write!(&mut w, "{}", source[span].dimmed()),
             Ok(Token::BlockComment) => write!(&mut w, "{}", source[span].dimmed()),

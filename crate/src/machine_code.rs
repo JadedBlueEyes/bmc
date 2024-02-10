@@ -9,8 +9,6 @@ type Register = u8;
 type DirectAddress = u8;
 type ImmediateValue = u8;
 
-type Instruction = (u16, u16);
-
 #[derive(Debug)]
 pub struct Ctx {
     pub pc: PC,
